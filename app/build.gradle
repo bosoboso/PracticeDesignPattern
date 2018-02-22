@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion 26
@@ -25,4 +26,21 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
+
+task("checkstyle", type: Checkstyle,
+        dependsOn: "assemble") {
+    group 'Reporting'
+    description "Generate Checkstyle reports."
+
+    ignoreFailures = true
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    showViolations true  // CheckStyle解析結果をStdOutに出力する
+    configFile = rootProject.file('config/checkstyle-easy.xml')
+    source = files(android.sourceSets.main.java.srcDirs)
+    classpath = files(configurations.compile.files)
 }
